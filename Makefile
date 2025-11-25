@@ -1,14 +1,14 @@
 # Generic Makefile for C Project
 # Folders: src/ for .c files, include/ for .h files, build/ for objects and binary
 
-TARGET := app
+TARGET := program
 SRC_DIR := src
 INC_DIR := include
-BUILD_DIR := build
+BUILD_DIR := bin
 
-CFLAGS := -std=c11 -Wall -Wextra -g
+CFLAGS := -std=gnu11 -Wall -Wextra -g
 CFLAGS += -I$(INC_DIR)
-LDFLAGS :=
+LDFLAGS := -lxml2
 
 SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
