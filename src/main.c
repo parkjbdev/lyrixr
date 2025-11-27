@@ -60,7 +60,8 @@ void sync_and_print(xmlNodePtr node, struct timeval *start) {
     xmlFree(end);
   }
 
-  xmlChar *inner_text = xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+  xmlChar *inner_text =
+      xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
 
   struct timeval now;
   long elapsed_ms;
@@ -77,6 +78,7 @@ void sync_and_print(xmlNodePtr node, struct timeval *start) {
     while (inner_text[i] != '\0') {
       i = print_with_delay((const char *)inner_text, i, ms_per_text);
     }
+    printf(" ");
 
     xmlFree(inner_text);
   } else {
@@ -84,8 +86,13 @@ void sync_and_print(xmlNodePtr node, struct timeval *start) {
   }
 }
 
-int main(void) {
-  xmlDocPtr doc = xmlReadFile("assets/외톨이.xml", "UTF-8", XML_PARSE_NOBLANKS);
+int main(int argc, char *argv[]) {
+  if (argc == 1) {
+    perror("no file input");
+    return -1;
+  }
+
+  xmlDocPtr doc = xmlReadFile(argv[1], "UTF-8", XML_PARSE_NOBLANKS);
   xmlNodePtr root_node = xmlDocGetRootElement(doc);
 
   if (!root_node) {
@@ -115,12 +122,13 @@ int main(void) {
   for (xmlNodePtr div = body_node->children; div != NULL; div = div->next) {
     if (xmlStrcmp(div->name, (const xmlChar *)"div") == 0) {
       for (xmlNodePtr p = div->children; p != NULL; p = p->next) {
-        if (xmlStrcmp(p->name, (const xmlChar *)"p") == 0) {
-          for (xmlNodePtr span = p->children; span != NULL; span = span->next) {
+        xmlNodePtr span = p->children;
+        if (xmlStrcmp(span->name, (const xmlChar *)"text") == 0) {
+          sync_and_print(p, &start);
+        } else {
+          for (span = p->children; span != NULL; span = span->next) {
             sync_and_print(span, &start);
           }
-        } else {
-          sync_and_print(p, &start);
         }
         printf("\n");
       }
